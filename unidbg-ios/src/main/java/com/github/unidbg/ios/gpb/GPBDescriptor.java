@@ -116,7 +116,11 @@ public class GPBDescriptor {
             if (oneofs != null) {
                 for(ObjcObject oneof : oneofs) {
                     NSString oneofName = oneof.callObjc("name").toNSString();
-                    NSArray oneofFields = oneof.callObjc("fields").toNSArray();
+                    ObjcObject oneofFieldsObj = oneof.callObjc("fields");
+                    if (oneofFieldsObj == null || oneofFieldsObj.callObjcInt("count") <= 0) {
+                        continue;
+                    }
+                    NSArray oneofFields = oneofFieldsObj.toNSArray();
                     builder.append("  oneof ").append(oneofName.getString()).append(" {\n");
                     for(ObjcObject field : oneofFields) {
                         buildMsgField(builder, name, field, enumDescriptors, true);
